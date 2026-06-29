@@ -99,13 +99,7 @@ OR 조건으로 설정하여 하나라도 해당하면 수집 — 한국 관련 
 
 **요청 바디:**
 ```json
-{
-  "contents": [{
-    "parts": [{
-      "text": "FIFA 2026 뉴스를 한국어 3줄로 요약해줘. 제목: {{2.Title}}"
-    }]
-  }]
-}
+{"contents":[{"parts":[{"text":"FIFA 2026 관련 뉴스를 한국어 3줄로만 요약해줘. 핵심만. 제목: 2.Title 내용: escapeJSON(2.Description)"}]}]}
 ```
 
 > **주의:** `gemini-1.5-flash` 및 `gemini-3.5-flash`는 2026년 6월 기준 rate limit 불안정. 안정적으로 작동이 확인된 `gemini-2.5-flash` 사용
