@@ -201,8 +201,8 @@ Make의 에러 핸들러 라우트를 활용해 503 등 일시적 오류 발생 
     ├── 02_workflow_filter.png        # 키워드 필터 설정
     ├── 03_gemini_api_setup.png       # Gemini API HTTP 모듈 설정 (API Key 마스킹)
     ├── 04_gemini_prompt.png          # 프롬프트 및 Body 설정
-    ├── 06_notion_mapping.png         # Notion 필드 매핑 설정
-    └── 07_notion_database.png        # Notion DB 최종 결과
+    ├── 05_notion_mapping.png         # Notion 필드 매핑 설정
+    └── 06_notion_database.png        # Notion DB 최종 결과
 ```
 
 ---
