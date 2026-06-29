@@ -207,9 +207,7 @@ Make의 에러 핸들러 라우트를 활용해 503 등 일시적 오류 발생 
 
 ## 🔒 보안 사항
 
-- API Key 및 Webhook URL은 스크린샷에서 마스킹 처리됨
-- 실제 운영 시 Make의 **Connection** 기능 또는 환경변수 방식으로 키 관리 권장
-- blueprint.json 내 API Key는 제출 전 반드시 교체 또는 삭제할 것
+- 스크린샷 및 blueprint.json의 API Key·Webhook URL은 마스킹/플레이스홀더 처리함
 
 ---
 
