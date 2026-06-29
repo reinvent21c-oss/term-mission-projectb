@@ -13,7 +13,7 @@
                 "gzip": true,
                 "password": "",
                 "username": "",
-                "maxResults": "2",
+                "maxResults": "1",
                 "filterDateTo": "",
                 "filterDateFrom": ""
             },
