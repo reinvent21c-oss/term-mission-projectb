@@ -1,5 +1,3 @@
-[Project B] 뉴스 요약 자동화 워크플로우 만들기_24팀
-
 # [Project B] FIFA 2026 뉴스 요약 자동화 워크플로우
 
 > **Make + Gemini API + Notion + Discord**를 연동한 뉴스 수집·요약·저장 자동화 파이프라인
@@ -49,6 +47,24 @@ RSS (Google News) → [키워드 필터] → HTTP (Gemini API) → Notion DB 저
 
 ---
 
+## ⏰ 스케줄 트리거 동작 원리
+
+본 워크플로우는 Make의 **스케줄 트리거(Daily schedule)**로 매일 오후 15:30(Asia/Seoul)에 자동 실행됩니다.
+
+- **동작 방식:** Make는 사용자가 지정한 시각이 되면 클라우드 서버에서 해당 시나리오를 자동으로 깨워(trigger) 첫 모듈(RSS)부터 순차 실행합니다. 사용자가 PC를 켜두거나 수동으로 실행할 필요가 없으며, Make 서버가 스케줄을 관리합니다.
+- **타임존:** Asia/Seoul 기준으로 설정해 한국 시간과 실제 실행 시각이 일치하도록 했습니다.
+- **실행 단위:** 1회 실행(execution)마다 RSS 수집 → 필터 → 요약 → 저장 → (필요 시) 알림까지 한 사이클이 완결됩니다.
+
+**실행 실패 시 발생할 수 있는 문제와 대응:**
+
+| 실패 상황 | 발생 문제 | 대응 |
+|-----------|-----------|------|
+| 트리거 시각에 뉴스 미수집 | 저장할 데이터 없음 | 필터 통과 건이 0이면 이후 모듈을 실행하지 않고 정상 종료 (불필요한 API 호출 방지) |
+| Gemini API 오류(503 등) | 요약 실패 → 저장 누락 | 에러 핸들러가 해당 건을 `HANDLED ERROR` 처리 후 Discord 알림 발송, 나머지 흐름은 정상 종료 |
+| 트리거 중복/과다 실행 | 동일 기사 중복 저장, API 비용 증가 | 수집 건수를 1건으로 제한해 1회 실행당 요약 호출 1회로 통제 (무한 루프 방지) |
+
+---
+
 ## 🔍 주요 설정 상세
 
 ### 1. RSS 피드 (모듈 #2)
@@ -58,8 +74,15 @@ URL: https://news.google.com/rss/search?q=FIFA+2026+%ED%95%9C%EA%B5%AD&hl=ko&gl=
 최대 수집 건수: 1
 ```
 
-- Google News RSS를 통해 한국어 FIFA 2026 뉴스를 실시간 수집
-- 제목(`title`), 설명(`description`), 링크(`link`), 발행일(`pubdate`) 필드 활용
+**RSS 수집 원리:**  
+RSS(Really Simple Syndication)는 웹사이트가 최신 콘텐츠를 **XML 형식**으로 배포하는 표준 규격입니다. 본 워크플로우의 데이터 수집은 다음 원리로 동작합니다.
+
+- **XML 파싱:** Google News RSS 엔드포인트는 기사 목록을 XML 문서로 반환합니다. Make의 RSS 모듈은 이 XML을 자동으로 파싱하여 각 기사를 개별 항목(item)으로 분해하고, `title`·`description`·`link`·`pubDate` 등의 태그를 구조화된 필드로 추출합니다.
+- **피드 갱신 주기:** RSS 피드는 원본 사이트(Google News)가 새 기사를 색인할 때마다 갱신됩니다. 본 워크플로우는 매일 스케줄 시각마다 피드 URL을 새로 요청하여 그 시점의 최신 항목을 받아옵니다. 즉 Make가 피드를 능동적으로 폴링(polling)하는 방식이며, 별도의 푸시 구독은 사용하지 않습니다.
+- **검색 쿼리:** URL의 `q=FIFA+2026+한국`(URL 인코딩 적용)으로 한국 관련 기사를 우선 수집하고, `hl=ko&gl=KR&ceid=KR:ko`로 한국어·한국 지역 결과를 지정합니다.
+- **수집 건수 제한:** `최대 수집 건수: 1`로 설정하여 1회 실행당 1건만 처리합니다. 이는 "기사 1건당 요약 1회" 원칙을 보장하고 불필요한 API 비용을 방지하기 위함입니다.
+
+> 참고: Google News RSS의 `description` 필드는 기사 본문이 아니라 제목·출처를 담은 HTML 링크입니다. 따라서 키워드 필터는 주로 `title` 기준으로 동작합니다.
 
 ### 2. 키워드 필터 (Filter)
 
@@ -169,9 +192,10 @@ Make의 에러 핸들러 라우트를 활용해 503 등 일시적 오류 발생 
 
 ## ✅ 최종 실행 결과
 
+- **자동 실행(스케줄 트리거) 확인:** 매일 오후 15:30 스케줄로 자동 실행되며, Make 실행 히스토리에서 `Schedule` 트리거 기준 `Success` 기록 확인 (실행 로그 스크린샷 첨부)
 - **Notion DB 저장 확인:** 기사 제목, AI 요약 3줄, 링크, 날짜 모두 정상 저장 (2026년 6월 29일 기준)
 - **에러 핸들러 동작 확인:** 503 에러 발생 시 `HANDLED ERROR` 처리 후 `Commit` → `Finalization` 정상 완료
-- **전체 워크플로우:** ✅ RSS 2건 수집 → 필터 통과 → Gemini 요약 → Notion 저장 end-to-end 검증 완료
+- **전체 워크플로우:** ✅ RSS 1건 수집 → 필터 통과 → Gemini 요약 → Notion 저장 end-to-end 검증 완료
 
 ---
 
@@ -196,7 +220,8 @@ Make의 에러 핸들러 라우트를 활용해 503 등 일시적 오류 발생 
     ├── 03_gemini_api_setup.png       # Gemini API HTTP 모듈 설정 (API Key 마스킹)
     ├── 04_gemini_prompt.png          # 프롬프트 및 Body 설정
     ├── 05_notion_mapping.png         # Notion 필드 매핑 설정
-    └── 06_notion_database.png        # Notion DB 최종 결과
+    ├── 06_notion_database.png        # Notion DB 최종 결과
+    └── 07_schedule_history.png       # 스케줄 자동 실행 히스토리 (Success 로그)
 ```
 
 ---
