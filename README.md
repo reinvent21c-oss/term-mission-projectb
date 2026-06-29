@@ -39,7 +39,7 @@ RSS (Google News) → [키워드 필터] → HTTP (Gemini API) → Notion DB 저
 
 | # | 모듈 | 역할 |
 |---|------|------|
-| 2 | RSS – Retrieve RSS feed items | Google News에서 "FIFA 2026 한국" 키워드로 최신 뉴스 최대 2건 수집 |
+| 2 | RSS – Retrieve RSS feed items | Google News에서 "FIFA 2026 한국" 키워드로 최신 뉴스 최대 1건 수집 |
 | Filter | FIFA 토너먼트 키워드 필터 | 한국 관련 기사만 추려내는 OR 조건 필터 |
 | 3 | HTTP – POST (Gemini API) | Gemini에게 제목 기반 3줄 요약 요청 |
 | 7 | Notion – Create a Data Source Item | 요약 결과를 Notion DB에 저장 |
@@ -53,7 +53,7 @@ RSS (Google News) → [키워드 필터] → HTTP (Gemini API) → Notion DB 저
 
 ```
 URL: https://news.google.com/rss/search?q=FIFA+2026+%ED%95%9C%EA%B5%AD&hl=ko&gl=KR&ceid=KR:ko
-최대 수집 건수: 2
+최대 수집 건수: 1
 ```
 
 - Google News RSS를 통해 한국어 FIFA 2026 뉴스를 실시간 수집
