@@ -45,6 +45,8 @@ RSS (Google News) → [키워드 필터] → HTTP (Gemini API) → Notion DB 저
 | 7 | Notion – Create a Data Source Item | 요약 결과를 Notion DB에 저장 |
 | 8 | HTTP – POST (Discord Webhook) | Discord 채널로 알림 발송 |
 
+※ 모듈 번호(#)는 Make 시나리오 내부 ID 기준입니다.
+
 ---
 
 ## 🔍 주요 설정 상세
