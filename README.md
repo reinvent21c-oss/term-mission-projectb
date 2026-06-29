@@ -32,8 +32,7 @@
 ## 🏗️ 워크플로우 구성
 
 ```
-RSS (Google News) → [키워드 필터] → HTTP (Gemini API) → Notion DB 저장
-                                                       → Discord 알림
+RSS (Google News) → [키워드 필터] → HTTP (Gemini API) → Notion DB 저장 → Discord 알림
 ```
 
 ### 모듈 상세
