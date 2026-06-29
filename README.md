@@ -16,7 +16,7 @@
 | AI 모델 | Google Gemini API (`gemini-2.5-flash`) |
 | 저장소 | Notion Database |
 | 알림 | Discord Webhook |
-| 실행 주기 | 매일 오전 15:30 (Daily schedule) |
+| 실행 주기 | 매일 오후 15:30 (Daily schedule) |
 
 ---
 
@@ -180,6 +180,15 @@ Make의 에러 핸들러 라우트를 활용해 503 등 일시적 오류 발생 
 
 ---
 
+## ⚠️ 한계점 및 향후 개선 사항
+
+| 항목 | 현재 상태 | 향후 개선 방향 |
+|------|-----------|----------------|
+| 중복 기사 방지 | 미적용 | RSS `id` 필드(GUID)를 Notion에 저장 후 저장 전 중복 체크 분기 추가 예정 |
+| Gemini 재시도 횟수 제한 | 미적용 (에러 시 Discord 알림 후 스킵) | Make HTTP 모듈 재시도 설정으로 최대 2회 재시도 적용 예정 |
+
+---
+
 ## 📁 파일 구성
 
 ```
@@ -202,17 +211,6 @@ Make의 에러 핸들러 라우트를 활용해 503 등 일시적 오류 발생 
 - API Key 및 Webhook URL은 스크린샷에서 마스킹 처리됨
 - 실제 운영 시 Make의 **Connection** 기능 또는 환경변수 방식으로 키 관리 권장
 - blueprint.json 내 API Key는 제출 전 반드시 교체 또는 삭제할 것
-
----
-
-## 🔧 재현 방법
-
-1. `blueprint.json`을 Make에 가져오기 (Import Blueprint)
-2. Gemini API Key 발급 후 HTTP 모듈 URL의 `key=` 값 교체
-3. Notion Integration Token 생성 및 모듈 #7 연결 교체
-4. Notion DB 생성 후 Data Source ID를 모듈 #7에 입력
-5. Discord Webhook URL을 모듈 #8에 입력
-6. "Run once"로 테스트 실행 → 정상 확인 후 Daily 스케줄 활성화
 
 ---
 
